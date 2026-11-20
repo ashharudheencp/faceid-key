@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Face ID Key</title>
+<style>
+  :root{
+    --bg:#0a0f1a; --panel:#0e1627; --panel2:#111c30; --fg:#e8eef9; --muted:#9aa6bd;
+    --line:rgba(150,180,220,.14); --soft:rgba(80,180,220,.07);
+    --accent:#3cc5e8; --accent2:#4fd1c5; --good:#4fd1c5; --bad:#f87171; --warn:#f0b357;
+    --goodbg:rgba(79,209,197,.12); --badbg:rgba(248,113,113,.12); --warnbg:rgba(240,179,87,.10);
+    color-scheme:dark;
+  }
+  @media (prefers-color-scheme:light){ :root:not([data-theme="dark"]){
+    --bg:#fbfcfe; --panel:#ffffff; --panel2:#f4f8fb; --fg:#121a2a; --muted:#5b6678;
+    --line:rgba(20,34,60,.12); --soft:rgba(20,80,120,.05);
+    --accent:#0e7aa6; --accent2:#0f766e; --good:#0f766e; --bad:#c02626; --warn:#b45309;
+    --goodbg:rgba(15,118,110,.10); --badbg:rgba(192,38,38,.08); --warnbg:rgba(180,83,9,.09);
+    color-scheme:light;
+  }}
+  :root[data-theme="light"]{
+    --bg:#fbfcfe; --panel:#ffffff; --panel2:#f4f8fb; --fg:#121a2a; --muted:#5b6678;
+    --line:rgba(20,34,60,.12); --soft:rgba(20,80,120,.05);
+    --accent:#0e7aa6; --accent2:#0f766e; --good:#0f766e; --bad:#c02626; --warn:#b45309;
+    --goodbg:rgba(15,118,110,.10); --badbg:rgba(192,38,38,.08); --warnbg:rgba(180,83,9,.09);
+    color-scheme:light;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);
+    font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.55;
+    -webkit-font-smoothing:antialiased;overflow-x:hidden}
+  .wrap{max-width:560px;margin:0 auto;
+    padding-left:max(18px,env(safe-area-inset-left));
+    padding-right:max(18px,env(safe-area-inset-right));
+    padding-block:40px 64px}
+  .mono{font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace}
+  .eyebrow{font-family:"JetBrains Mono",monospace;font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);margin:0 0 12px}
+  h1{font-family:"Spectral",Georgia,serif;font-weight:600;font-size:clamp(1.8rem,6vw,2.4rem);line-height:1.05;letter-spacing:-.015em;margin:0 0 .4em;text-wrap:balance}
+  .sub{font-size:1.02rem;color:var(--muted);margin:0 0 6px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px 18px;margin:16px 0}
+  .step{font-family:"JetBrains Mono",monospace;font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin:0 0 8px}
+  .card h2{font-family:"Spectral",Georgia,serif;font-weight:600;font-size:1.2rem;margin:0 0 6px}
+  .card p{margin:0 0 10px;font-size:.96rem}
+  .card p.muted{color:var(--muted);font-size:.9rem}
+  .btn{display:block;width:100%;font-family:"JetBrains Mono",monospace;font-size:.92rem;letter-spacing:.02em;
+    padding:15px 18px;border-radius:12px;border:1px solid var(--accent);background:var(--accent);color:#06121b;
+    cursor:pointer;transition:.15s;margin-top:4px}
+  .btn:hover{filter:brightness(1.06)}
+  .btn:disabled{opacity:.5;cursor:not-allowed}
+  .btn.ghost{background:none;color:var(--accent)}
+  input[type=text]{width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:12px;
+    padding:14px;color:var(--fg);font:inherit;font-size:1rem;margin-bottom:10px}
+  .status{margin-top:12px;padding:12px 14px;border-radius:12px;font-size:.92rem;display:none}
+  .status.on{display:block}
+  .status.ok{background:var(--goodbg);border:1px solid color-mix(in srgb,var(--good) 40%,transparent);color:var(--good)}
+  .status.bad{background:var(--badbg);border:1px solid color-mix(in srgb,var(--bad) 45%,transparent);color:var(--bad)}
+  .status.warn{background:var(--warnbg);border:1px solid color-mix(in srgb,var(--warn) 40%,transparent);color:var(--warn)}
+  .status .lab{font-family:"JetBrains Mono",monospace;font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:5px;opacity:.85}
+  .out{font-family:"JetBrains Mono",monospace;font-size:.72rem;color:var(--muted);word-break:break-all;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:11px;margin-top:10px;white-space:pre-wrap;display:none}
+  .out.on{display:block}
+  .pill{display:inline-block;font-family:"JetBrains Mono",monospace;font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;padding:3px 9px;border-radius:999px;border:1px solid var(--line);color:var(--muted);margin:2px 4px 2px 0}
+  .pill.ok{color:var(--good);border-color:color-mix(in srgb,var(--good) 40%,transparent);background:var(--goodbg)}
+  .pill.bad{color:var(--bad);border-color:color-mix(in srgb,var(--bad) 45%,transparent);background:var(--badbg)}
+  .note{border-left:3px solid var(--accent);padding:4px 0 4px 16px;margin:16px 0;color:var(--fg);font-size:.92rem}
+  .foot{margin-top:28px;padding-top:18px;border-top:1px solid var(--line);color:var(--muted);font-size:.85rem}
+</style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:wght@500;600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+</head>
+<body>
+<div class="wrap">
+  <p class="eyebrow">AURORA / HELIX · owner authorization</p>
+  <h1>Your Face ID key.</h1>
+  <p class="sub">A passkey that lets you approve things with your face. The private key is created inside your iPhone's Secure Enclave and <strong>never leaves it</strong> — Apple syncs it across your devices end-to-end encrypted, and every use needs your face. This sets up the <em>authorization</em> layer; your offline T1 key stays untouched.</p>
+
+  <div class="card" id="c1">
+    <p class="step">Step 1 · Check this device</p>
+    <h2>Can this page make a passkey?</h2>
+    <p class="muted">WebAuthn needs a secure context and a platform authenticator (Face ID / Touch ID). If this view blocks it, you'll be told exactly what to do.</p>
+    <button class="btn ghost" id="checkbtn">Check my device</button>
+    <div class="status" id="checkstatus"></div>
+  </div>
+
+  <div class="card" id="c2">
+    <p class="step">Step 2 · Create</p>
+    <h2>Create my Face ID key</h2>
+    <p class="muted">Tap, then confirm with Face ID. Your iPhone makes the key; this page only ever sees the <strong>public</strong> half.</p>
+    <button class="btn" id="createbtn">Create my Face ID key</button>
+    <div class="status" id="createstatus"></div>
+    <div class="out" id="createout"></div>
+  </div>
+
+  <div class="card" id="c3">
+    <p class="step">Step 3 · Try it</p>
+    <h2>Approve something with your face</h2>
+    <p class="muted">Type anything you'd want to authorize, then confirm with Face ID. The page verifies the signature against your public key — live, on your device.</p>
+    <input type="text" id="approvetext" placeholder="e.g. Release HOLD on the 700M model" autocomplete="off">
+    <button class="btn" id="approvebtn">Approve with Face ID</button>
+    <div class="status" id="approvestatus"></div>
+    <div class="out" id="approveout"></div>
+  </div>
+
+  <div class="card" id="c4">
+    <p class="step">Step 4 · Register with RV2</p>
+    <h2>Send me your public key</h2>
+    <p class="muted">This copies your <strong>public</strong> key (safe to share) so I can register it as your authorization key in the Phoenix verifier. No private key, ever.</p>
+    <button class="btn ghost" id="copybtn" disabled>Copy my public key</button>
+    <div class="status" id="copystatus"></div>
+  </div>
+
+  <div class="note">The passkey here is bound to this page's web address — fine for setting up and proving the mechanism. When your real owner console exists, you re-register with one more Face ID (passkeys are cheap to re-make). Your T1 provenance key <strong>680e8d2e…</strong> is never involved and never leaves your pendrive.</div>
+
+  <p class="foot">No overclaim, no lie — the code talks. This page handles only public keys and signatures. The private key lives in your Secure Enclave and is never exported.</p>
+</div>
+
+<script>
+(function(){
+  var $=function(id){return document.getElementById(id);};
+  var STORE={cred:null,pub:null,alg:null,created:null};
+
+  function b64u(buf){var u=new Uint8Array(buf),s="";for(var i=0;i<u.length;i++)s+=String.fromCharCode(u[i]);return btoa(s).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");}
+  function b64(buf){var u=new Uint8Array(buf),s="";for(var i=0;i<u.length;i++)s+=String.fromCharCode(u[i]);return btoa(s);}
+  function b64uToBuf(s){s=s.replace(/-/g,"+").replace(/_/g,"/");while(s.length%4)s+="=";var bin=atob(s),u=new Uint8Array(bin.length);for(var i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);return u.buffer;}
+  function b64ToBuf(s){var bin=atob(s),u=new Uint8Array(bin.length);for(var i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);return u.buffer;}
+  function rand(n){var u=new Uint8Array(n);crypto.getRandomValues(u);return u;}
+  function concat(a,b){var u=new Uint8Array(a.byteLength+b.byteLength);u.set(new Uint8Array(a),0);u.set(new Uint8Array(b),a.byteLength);return u;}
+  async function sha256(buf){return await crypto.subtle.digest("SHA-256",buf);}
+  function show(id,cls,html){var e=$(id);e.className="status on "+cls;e.innerHTML=html;}
+  function showOut(id,txt){var e=$(id);e.className="out on";e.textContent=txt;}
+  function save(){try{localStorage.setItem("aurora_faceid",JSON.stringify(STORE));}catch(e){}}
+  function load(){try{var s=localStorage.getItem("aurora_faceid");if(s){STORE=JSON.parse(s);return true;}}catch(e){}return false;}
+
+  function derToRaw(der){
+    var d=new Uint8Array(der),off=0;
+    if(d[off++]!==0x30) throw new Error("bad DER");
+    if(d[off]&0x80){off+=1+(d[off]&0x7f);}else{off++;}
+    function readInt(){
+      if(d[off++]!==0x02) throw new Error("bad INT");
+      var len=d[off++]; var v=d.slice(off,off+len); off+=len;
+      while(v.length>32&&v[0]===0) v=v.slice(1);
+      var out=new Uint8Array(32); out.set(v,32-v.length); return out;
+    }
+    var r=readInt(), s=readInt(); return concat(r, s);
+  }
+
+  async function check(){
+    var ok=true, html="";
+    function row(label,pass){html+='<span class="pill '+(pass?"ok":"bad")+'">'+(pass?"✓ ":"✗ ")+label+'</span>'; if(!pass)ok=false;}
+    row("secure context", !!window.isSecureContext);
+    row("WebAuthn present", !!(window.PublicKeyCredential));
+    var plat=false;
+    try{ if(window.PublicKeyCredential&&PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable){ plat=await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable(); } }catch(e){}
+    row("Face ID / platform key", plat);
+    if(ok){ show("checkstatus","ok",'<span class="lab">ready</span>'+html+'<div style="margin-top:8px">This device can make the key. Go to Step 2.</div>'); }
+    else{ show("checkstatus","warn",'<span class="lab">blocked here</span>'+html+'<div style="margin-top:8px">This view is blocking the secure key API. If you are not already in Safari, open this page directly in Safari and try again.</div>'); }
+  }
+
+  async function create(){
+    $("createbtn").disabled=true;
+    try{
+      var opts={publicKey:{
+        challenge:rand(32),
+        rp:{name:"AURORA / HELIX owner key"},
+        user:{id:rand(16),name:"ACP",displayName:"Dr Ashharudheen (ACP)"},
+        pubKeyCredParams:[{type:"public-key",alg:-7},{type:"public-key",alg:-257}],
+        authenticatorSelection:{authenticatorAttachment:"platform",userVerification:"required",residentKey:"preferred"},
+        timeout:60000, attestation:"none"
+      }};
+      var cred=await navigator.credentials.create(opts);
+      var resp=cred.response;
+      var spki=null, alg=null;
+      if(resp.getPublicKey){ spki=resp.getPublicKey(); alg=resp.getPublicKeyAlgorithm?resp.getPublicKeyAlgorithm():-7; }
+      if(!spki) throw new Error("could not export public key on this browser");
+      STORE.cred=b64u(cred.rawId);
+      STORE.pub=b64(spki);
+      STORE.alg=alg;
+      STORE.created=new Date().toISOString();
+      save();
+      show("createstatus","ok",'<span class="lab">created · Face ID key live</span>Your key is in the Secure Enclave. The public half is below — Step 3 can now verify your face.');
+      showOut("createout","public key (SPKI, base64):\n"+STORE.pub+"\n\ncredential id:\n"+STORE.cred+"\nalgorithm: "+(alg===-7?"ES256 (P-256)":alg));
+      $("copybtn").disabled=false;
+    }catch(e){
+      var msg=(e&&e.name==="NotAllowedError")?"The secure key API is blocked here (or you cancelled). Make sure you opened this page in Safari, not inside another app's browser.":("Error: "+(e&&e.message?e.message:e));
+      show("createstatus","bad",'<span class="lab">not created</span>'+msg);
+    }
+    $("createbtn").disabled=false;
+  }
+
+  async function approve(){
+    if(!STORE.cred||!STORE.pub){ show("approvestatus","warn",'<span class="lab">no key yet</span>Create your Face ID key in Step 2 first.'); return; }
+    var text=$("approvetext").value.trim()||"(test approval)";
+    $("approvebtn").disabled=true;
+    try{
+      var payload=new TextEncoder().encode("AURORA-AUTHORIZE:"+text);
+      var challenge=await sha256(payload.buffer);
+      var opts={publicKey:{
+        challenge:new Uint8Array(challenge),
+        allowCredentials:[{type:"public-key",id:new Uint8Array(b64uToBuf(STORE.cred))}],
+        userVerification:"required", timeout:60000
+      }};
+      var assn=await navigator.credentials.get(opts);
+      var r=assn.response;
+      var key=await crypto.subtle.importKey("spki",b64ToBuf(STORE.pub),{name:"ECDSA",namedCurve:"P-256"},false,["verify"]);
+      var cdh=await sha256(r.clientDataJSON);
+      var signed=concat(r.authenticatorData, cdh);
+      var rawSig=derToRaw(r.signature);
+      var valid=await crypto.subtle.verify({name:"ECDSA",hash:"SHA-256"},key,rawSig,signed);
+      var cd=JSON.parse(new TextDecoder().decode(r.clientDataJSON));
+      var chMatch=(cd.challenge===b64u(challenge));
+      if(valid&&chMatch&&cd.type==="webauthn.get"){
+        show("approvestatus","ok",'<span class="lab">approved · verified on your device</span>You approved: <strong>"'+text.replace(/</g,"&lt;")+'"</strong><br>Signed by your face, and the signature verifies against your public key. Nobody but you could have produced it, and it can\'t be replayed for anything else.');
+        showOut("approveout","verified: true\nchallenge match: true\nauthorized text: "+text+"\nassertion signature (base64): "+b64(r.signature).slice(0,64)+"…");
+      }else{
+        show("approvestatus","bad",'<span class="lab">verify failed</span>valid='+valid+' challengeMatch='+chMatch+' type='+cd.type);
+      }
+    }catch(e){
+      var msg=(e&&e.name==="NotAllowedError")?"Blocked or cancelled.":("Error: "+(e&&e.message?e.message:e));
+      show("approvestatus","bad",'<span class="lab">not approved</span>'+msg);
+    }
+    $("approvebtn").disabled=false;
+  }
+
+  function copyKey(){
+    if(!STORE.pub){ show("copystatus","warn",'<span class="lab">no key</span>Create your key first.'); return; }
+    var blob=JSON.stringify({
+      record:"ACP owner Face ID (WebAuthn/ES256) authorization key",
+      origin:location.origin,
+      rp_id_hint:location.hostname,
+      public_key_spki_b64:STORE.pub,
+      credential_id_b64u:STORE.cred,
+      algorithm:"ES256 (P-256)",
+      created:STORE.created
+    },null,2);
+    if(navigator.clipboard&&navigator.clipboard.writeText){
+      navigator.clipboard.writeText(blob).then(function(){ show("copystatus","ok",'<span class="lab">copied</span>Paste this back to RV2 to register your key. It contains only public data.'); }).catch(function(){ show("copystatus","warn",'<span class="lab">copy manually</span><div class="out on">'+blob.replace(/</g,"&lt;")+'</div>'); });
+    }else{ show("copystatus","warn",'<span class="lab">copy manually</span><div class="out on">'+blob.replace(/</g,"&lt;")+'</div>'); }
+  }
+
+  if(load()&&STORE.pub){ $("copybtn").disabled=false; show("createstatus","ok",'<span class="lab">key already on this device</span>A Face ID key was already created here. You can go straight to Step 3, or create a fresh one.'); }
+
+  $("checkbtn").onclick=check;
+  $("createbtn").onclick=create;
+  $("approvebtn").onclick=approve;
+  $("copybtn").onclick=copyKey;
+})();
+</script>
+</body>
+</html>
